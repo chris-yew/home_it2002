@@ -907,7 +907,7 @@ def options(request, id):
         end_date = dates[1]
         print(start_date, end_date)
         cursor.execute(
-            "SELECT * FROM property WHERE userid = %s AND (%s BETWEEN start_available AND end_available) AND (%s BETWEEN start_available AND end_available) ", [id, start_date, end_date])
+            "SELECT * FROM property WHERE userid = %s ", [id])
         record = cursor.fetchall()
     context["records"] = record
     context['name'] = id
