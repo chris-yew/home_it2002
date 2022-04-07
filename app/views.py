@@ -33,7 +33,9 @@ def register(request):
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
+        print('hihi')
         if form.is_valid():
+            print('hehe')
             '''
             user = form.save()
             username = form.cleaned_data.get('username')
@@ -56,6 +58,7 @@ def register(request):
             identification_card = form.cleaned_data.get(
                 'identification_card')
             passport = form.cleaned_data.get('passport')
+            credit_card = form.cleaned_data.get('credit_card')
             print(type(contact))
             with connection.cursor() as cursor:  # userid is pk
                 cursor.execute("SELECT * FROM users WHERE email=%s", [email])
@@ -100,6 +103,10 @@ def register(request):
                 if country_code != '+60' and country_code != '+65' and country_code != '+66':
                     messages.info(
                         request, 'Please enter +60/+65/+66 for country code')
+                    return redirect('register')
+                if len(str(credit_card)) != 12:
+                    messages.info(
+                        request, 'Please enter a valid credit card of 12 digits')
                     return redirect('register')
                 else:
                     print('haha')
@@ -148,7 +155,7 @@ def adminPage(request):
         result_dict['worstcust'] = worstcust
 
         cursor.execute(
-            "SELECT u.userid FROM users u WHERE u.userid NOT IN (SELECT c1.complain_of_userid FROM case_log c1)"
+            "SELECT u.userid FROM users u WHERE u.userid NOT IN (SELECT c1.complain_of_userid FROM case_log c1) LIMIT 10"
         )
         nocomp = cursor.fetchall()
         result_dict['nocomp'] = nocomp
@@ -183,7 +190,7 @@ def adminPage(request):
     result_dict['users'] = users
     print(result_dict)
     '''
-    return render(request, 'app/tryadminpage.html', result_dict)
+    return render(request, 'app/tryadminpage2.html', result_dict)
 
 
 def aduser(request):
@@ -218,7 +225,7 @@ def adviewproperty(request, id):
                 redirect_to = '/adviewproperty/'+id
                 return redirect(redirect_to)
 
-    return render(request, 'app/adviewproperty.html', result_dict)
+    return render(request, 'app/adviewproperty2.html', result_dict)
 
 
 def adproperty(request):
@@ -260,8 +267,8 @@ def adproperty(request):
             property = property
             messages.info(
                 request, "Please enter valid start date and end date")
-
-        if country == '':
+        print('hahacountry', country)
+        if country == None:
             with connection.cursor() as cursor:
                 cursor.execute('''SELECT * FROM property WHERE  start_available >=%s
                 AND end_available <= %s ''', [
@@ -284,7 +291,7 @@ def adproperty(request):
                 cursor.execute("DELETE FROM  property WHERE propertyid = %s", [
                                request.POST['id']])
                 return redirect(adproperty)
-    return render(request, 'app/adproperty.html', result_dict)
+    return render(request, 'app/adproperty2.html', result_dict)
 
 
 def adcase(request):
@@ -295,20 +302,24 @@ def adcase(request):
         reason = request.GET.get('reasons')
         comp_by = request.GET.get('complain by')
         comp = request.GET.get('complained')
-        if reason == '' and comp_by == '' and comp == '':
-            cases = cases
-        else:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM case_log WHERE (reasons = %s or %s='') AND (complain_by_userid = %s OR %s='') AND (complain_of_userid = %s or %s='')", [
-                               reason, reason, comp_by, comp_by, comp, comp])
-                cases = cursor.fetchall()
+        print('reason:', reason)
+        print('compby:', comp_by)
+        print('comp', comp)
+        if reason == None:
+            reason = ''
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM case_log WHERE (reasons = %s or %s='') AND (complain_by_userid = %s OR %s='') AND (complain_of_userid = %s or %s='')", [
+                           reason, reason, comp_by, comp_by, comp, comp])
+            cases = cursor.fetchall()
     result_dict = {'cases': cases}
-    return render(request, 'app/adcase.html', result_dict)
+    return render(request, 'app/adcase2.html', result_dict)
 
 
 def adexchange(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM exchange")
+        cursor.execute('''SELECT DISTINCT c.exchangeid,p.country, c.userid1,c.userid2,c.start,c.ends,deposit_refunded,revenue,c.status1,c.status2
+                FROM exchange c,property p''')
         ex = cursor.fetchall()
     if request.GET:
         country = request.GET.get('country')
@@ -343,15 +354,26 @@ def adexchange(request):
             ex = ex
             messages.info(
                 request, "Please enter valid start date and end date")
-        else:
-            with connection.cursor() as cursor:
-                cursor.execute('''SELECT c.exchangeid,p.country, c.userid1,c.userid2,c.propertyid1,c.propertyid2,c.start,c.ends,deposit_refunded,revenue,c.status1,c.status2
-                 FROM exchange c,property p  WHERE
-                (c.propertyid1=p.propertyid or c.propertyid2=p.propertyid) AND (p.country=%s OR %s='') AND (c.start>=%s) AND (c.ends<=%s) AND (status1=%s OR %s='')AND(status2=%s OR %s='') ''',
-                               [country, country, start_date, end_date, status1, status1, status2, status2])
-                ex = cursor.fetchall()
+        if status1 == None:
+            status1 = ''
+        if status2 == None:
+            status2 = ''
+        if country == None:
+            country = ''
+
+        print('status1:', status1)
+        print("status2", status2)
+        print('country', country)
+        print('startdate', start_date)
+        print('enddate', end_date)
+        with connection.cursor() as cursor:
+            cursor.execute('''SELECT DISTINCT c.exchangeid,p.country, c.userid1,c.userid2,c.start,c.ends,deposit_refunded,revenue,c.status1,c.status2
+                FROM exchange c,property p  WHERE
+            (p.country=%s OR %s='') AND (c.start>=%s) AND (c.ends<=%s) AND (status1=%s OR %s='')AND(status2=%s OR %s='') ''',
+                           [country, country, start_date, end_date, status1, status1, status2, status2])
+            ex = cursor.fetchall()
     result_dict = {'ex': ex}
-    return render(request, 'app/adexchange.html', result_dict)
+    return render(request, 'app/adexchange2.html', result_dict)
 
 
 def population_chart(request):

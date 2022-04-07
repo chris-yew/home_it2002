@@ -1,0 +1,227 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+
+    <!-- Semantic CSS -->
+    <link rel="stylesheet" type='text/css'
+        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+        integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <title>Admin Page</title>
+    <style type="text/css">
+        body {
+            background-color: lavender;
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            opacity: 0.9;
+        }
+
+        #ui {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #ui label {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ui blue six item inverted menu">
+        <a class="item" href="/">
+            <img class="d-inline-block" src="{% static 'app/images/logo.png' %}" width="30" height="30" />
+            Home XChange
+        </a>
+        <a class="item" href="aduser">
+            Users
+        </a>
+        <a class="item" href="adproperty">
+            Properties
+        </a>
+        <a class="item" href="adcase">
+            Case Log
+        </a>
+        <a class="item" href="adexchange">
+            Exchanges
+        </a>
+        <a class="item" href="logout">
+            Logout
+        </a>
+    </div>
+
+    <div class="ui container" style="margin-left: 40px">
+        <canvas id="population-chart" data-url="{% url 'population-chart' %}"></canvas>
+    </div>
+
+    <div class="ui container" style="margin-left: 40px">
+        <canvas id="property-chart" data-url="{% url 'property-chart' %}"></canvas>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#population-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.country,
+                            datasets: [{
+                                label: 'Revenue',
+                                backgroundColor: 'blue',
+                                data: data.revenue
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Revenue from each country'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#property-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.country,
+                            datasets: [{
+                                label: 'Count',
+                                backgroundColor: 'blue',
+                                data: data.count
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Property count in each country'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+
+
+    <div class="ui grid" style="margin-left: 40px; margin-right: 40px">
+        <div class="eight wide column">
+            <h3> Most Exchange Users</h3>
+            <table class="ui table" style="margin-top: 10px">
+                <thead>
+                    <tr>
+                        <th> Userid </th>
+                        <th> Exchange count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bestcust %}
+                    <tr>
+                        <td> {{ b.0}} </td>
+                        <td> {{ b.1 }} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="eight wide column">
+            <h3> Least Exchange Users</h3>
+            <table class="ui table" style="margin-top: 10px">
+                <thead>
+                    <th> Userid </th>
+                </thead>
+                {% for n in noex %}
+                <tr>
+                    <td> {{ n.0}} </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="eight wide column">
+            <h3> Most Complained Users</h3>
+            <table class="ui table" style="margin-top: 10px">
+                <thead>
+                    <th style="width: 20%"> Userid </th>
+                    <th style="width: 30%"> Complained counts</th>
+                    <th style="width: 30%"> Rating </th>
+                </thead>
+                {% for w in worstcust %}
+                <tr>
+                    <td> {{ w.0}} </td>
+                    <td> {{ w.1 }} </td>
+                    <td> {{ w.2 }} </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="eight wide column">
+            <h3> Least Complained Users</h3>
+            <table class="ui table" style="margin-top: 10px">
+                <thead>
+                    <th> Userid </th>
+                </thead>
+                {% for n in nocomp %}
+                <tr>
+                    <td> {{ n.0}} </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
