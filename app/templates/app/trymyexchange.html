@@ -108,7 +108,8 @@
                         </form>
                     </td>
                     <td>
-                        <form action="/action_page.php">{% csrf_token %}
+                        <form method='post'>
+                            {% csrf_token %}
                             <select name="reason" id="reason">
                                 <option selected disabled value="">Select Reason</option>
                                 <option value="{{ex.0}}lost item">Lost Item</option>
@@ -136,13 +137,14 @@
                         </form>
                     </td>
                     <td>
-                        <form action="/action_page.php">{% csrf_token %}
+                        <form method='post'>
+                            {% csrf_token %}
                             <select name="reason" id="reason">
                                 <option selected disabled value="">Select Reason</option>
-                                <option value="{{ex.0}}lost item">Lost Item</option>
-                                <option value="{{ex.0}}vandalism">Vandalism</option>
-                                <option value="{{ex.0}}house rules violation">House rules violation</option>
-                                <option value="{{ex.0}}other">Other</option>
+                                <option value="{{i.0}}lost item">Lost Item</option>
+                                <option value="{{i.0}}vandalism">Vandalism</option>
+                                <option value="{{i.0}}house rules violation">House rules violation</option>
+                                <option value="{{i.0}}other">Other</option>
                             </select>
                             <button class="btn btn-primary btn-sm my-2" type="submit" value="Submit">Submit</button>
                         </form>
