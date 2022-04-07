@@ -687,8 +687,8 @@ def add(request, id):
                     number_of_guests_allowed,start_available,end_available,house_rules,amenities,userid)
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
                                    [propertyid, request.POST['address'], request.POST['city'], request.POST['country'],
-                                    house, request.POST['bedrooms'], request.POST['guest'], start_date,
-                                    end_date, request.POST['rules'], request.POST['amenities'], id])
+                                    house, request.POST['bedrooms'], request.POST['guest'], start,
+                                    end, request.POST['rules'], request.POST['amenities'], id])
                     messages.info(
                         request, 'Your property is successfully listed!')
                     return redirect('index')
