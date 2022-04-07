@@ -123,7 +123,7 @@ def register(request):
                     return redirect('login')
 
     context = {'form': form}
-    return render(request, 'app/register.html', context)
+    return render(request, 'app/tryregister.html', context)
 
 
 @ allowed_users(allowed_roles=['admin'])
@@ -183,7 +183,7 @@ def adminPage(request):
     result_dict['users'] = users
     print(result_dict)
     '''
-    return render(request, 'app/adminPage3.html', result_dict)
+    return render(request, 'app/tryadminpage.html', result_dict)
 
 
 def aduser(request):
@@ -197,7 +197,7 @@ def aduser(request):
                                request.POST['id']])
                 return redirect('aduser')
     result_dict = {'user': all_user}
-    return render(request, 'app/aduser.html', result_dict)
+    return render(request, 'app/adminviewusers.html', result_dict)
 
 
 def adviewproperty(request, id):
@@ -934,6 +934,8 @@ def myexchange(request, id):
     else:
         print('ongoing1:', ongoing1)
         print('ongoing2:', ongoing2)
+        print('closed1:', closed1)
+        print('closed2:', closed2)
         context['ongoing1'] = ongoing1
         context['ongoing2'] = ongoing2
         context['closed1'] = closed1
@@ -1008,7 +1010,7 @@ def myexchange(request, id):
                 messages.info(
                     request, "We are so sorry to hear about your complain. We have made a compensation to your homexchange wallet :(")
                 return redirect('index')
-    return render(request, 'app/myexchange.html', context)
+    return render(request, 'app/trymyexchange.html', context)
 
 
 @ login_required(login_url='login')

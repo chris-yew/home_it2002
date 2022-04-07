@@ -1,0 +1,242 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+
+    <!-- Semantic CSS -->
+    <link rel="stylesheet" type='text/css'
+        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+        integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <title>Admin Page</title>
+    <style type="text/css">
+        body {
+            background-image: url('/static/app/images/cow.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            opacity: 0.9;
+        }
+
+        #ui {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #ui label {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar sticky-top navbar-expand-sm navbar-light" style="background-color: #e3f2fd;">
+        <div class="container">
+            <a href="/" class="navbar-brand mb-0 h1">
+                <img class="d-inline-block" src="{% static 'app/images/logo.png' %}" width="30" height="30" />
+                Home XChange
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a href="aduser" class="nav-link active">
+                            Users
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="adproperty" class="nav-link active">
+                            Properties
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="adcase" class="nav-link active">
+                            Case Log
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="adexchange" class="nav-link active">
+                            Exchanges
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <a href="logout" class="btn btn btn-primary btn-md" role="button" aria-pressed="true">logout
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" style="width: 1200px;">
+        <canvas id="population-chart" data-url="{% url 'population-chart' %}"></canvas>
+    </div>
+
+    <div class="container" style="width: 1200px;">
+        <canvas id="property-chart" data-url="{% url 'property-chart' %}"></canvas>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#population-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.country,
+                            datasets: [{
+                                label: 'Population',
+                                backgroundColor: 'blue',
+                                data: data.revenue
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Population Bar Chart'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#property-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.country,
+                            datasets: [{
+                                label: 'Count',
+                                backgroundColor: 'blue',
+                                data: data.count
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Property count in each country'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+
+
+    <div class="container my-5 mb-5 bg-light rounded" style="width: 1200px;">
+        <div class="row">
+            <div class="col-md-6 p-2 my-5">
+                <h3> Most Exchange Users</h3>
+                <table class="table align-middle table-borderless" style='text-align:left'>
+                    <thead class="bg-light">
+                        <th> Userid </th>
+                        <th> Exchange count</th>
+                    </thead>
+                    {% for b in bestcust %}
+                    <tr>
+                        <td> {{ b.0}} </td>
+                        <td> {{ b.1 }} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-md-6 p-2 my-5">
+                <h3> Least Exchange Users</h3>
+                <table class="table align-middle table-borderless" style='text-align:left'>
+                    <thead>
+                        <th> Userid </th>
+                    </thead>
+                    {% for n in noex %}
+                    <tr>
+                        <td> {{ n.0}} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="col-md-6 p-2 my-5">
+                <h3> Most Complained Users</h3>
+                <table class="table align-middle table-borderless" style='text-align:left'>
+                    <thead>
+                        <th style="width: 20%"> Userid </th>
+                        <th style="width: 30%"> Complained counts</th>
+                        <th style="width: 30%"> Rating </th>
+                    </thead>
+                    {% for w in worstcust %}
+                    <tr>
+                        <td> {{ w.0}} </td>
+                        <td> {{ w.1 }} </td>
+                        <td> {{ w.2 }} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-md-6 p-2 my-5">
+                <h3> Least Complained Users</h3>
+                <table class="table align-middle table-borderless" style='text-align:left'>
+                    <thead>
+                        <th> Userid </th>
+                    </thead>
+                    {% for n in nocomp %}
+                    <tr>
+                        <td> {{ n.0}} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
