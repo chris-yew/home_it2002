@@ -668,8 +668,10 @@ def add(request, id):
         if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end_date) == None:
             messages.info(request, "Please enter your end date in dd/mm/yy")
             return redirect(redirect_to)
-
-        if start_date > end_date:
+        print('check:', start_date, end_date)
+        start = datetime.strptime(start_date, '%d/%m/%y').date()
+        end = datetime.strptime(end, '%d/%m/%y').date()
+        if start > end:
             messages.info(request, 'Please enter valid start and end date')
         else:
             with connection.cursor() as cursor:
