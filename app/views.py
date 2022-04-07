@@ -670,7 +670,7 @@ def add(request, id):
             return redirect(redirect_to)
         print('check:', start_date, end_date)
         start = datetime.strptime(start_date, '%d/%m/%y').date()
-        end = datetime.strptime(end, '%d/%m/%y').date()
+        end = datetime.strptime(end_date, '%d/%m/%y').date()
         if start > end:
             messages.info(request, 'Please enter valid start and end date')
         else:
