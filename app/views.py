@@ -197,7 +197,7 @@ def aduser(request):
                                request.POST['id']])
                 return redirect('aduser')
     result_dict = {'user': all_user}
-    return render(request, 'app/adminviewusers.html', result_dict)
+    return render(request, 'app/adusers.html', result_dict)
 
 
 def adviewproperty(request, id):
