@@ -79,7 +79,7 @@ complain_by_userid VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFER
 complain_of_userid VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE);
 
 
-CREATE TABLE pending(
+CREATE TABLE  IF NOT EXISTS pending(
 requested_from VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
 requested_to VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
 requested_property VARCHAR(200) REFERENCES property(propertyid) ON DELETE CASCADE DEFERRABLE,
@@ -137,4 +137,28 @@ insert into case_log (caseid, reasons, exchangeid, complain_by_userid, complain_
 values (6,'lost item', 1,5,4);
 
 */
+create table IF NOT EXISTS geometry_test2(
+userid varchar(20),
+latitude decimal(9,6),
+longitude decimal(9,6),
+geom GEOMETRY(POINT, 4326));
 
+UPDATE geometry_test2
+  SET  geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
+;
+
+CREATE OR REPLACE FUNCTION updategeom ()
+RETURNS Trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+   NEW.geom = st_setsrid(st_point(NEW.longitude, NEW.latitude), 4326);
+   RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER 
+geometry_test
+BEFORE INSERT OR UPDATE of latitude,longitude on 
+geometry_test2
+FOR EACH ROW EXECUTE PROCEDURE updategeom ();

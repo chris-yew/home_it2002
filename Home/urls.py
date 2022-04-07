@@ -44,6 +44,6 @@ urlpatterns = [
          app.views.adviewproperty, name='adviewproperty'),
     path('adproperty', app.views.adproperty, name='adproperty'),
     path('adcase', app.views.adcase, name='adcase'),
-    path('adexchange', app.views.adexchange, name='adexchange')
+    path('adexchange', app.views.adexchange, name='adexchange'),
     # path('locate/<str:id>',app.views.locate,name='locate'),
 ]
