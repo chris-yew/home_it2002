@@ -369,7 +369,7 @@ def adexchange(request):
         with connection.cursor() as cursor:
             cursor.execute('''SELECT DISTINCT c.exchangeid,p.country, c.userid1,c.userid2,c.start,c.ends,deposit_refunded,revenue,c.status1,c.status2
                 FROM exchange c,property p  WHERE
-            (p.country=%s OR %s='') AND (c.start>=%s) AND (c.ends<=%s) AND (status1=%s OR %s='')AND(status2=%s OR %s='') ''',
+            (p.country=%s OR %s='') AND (c.start>=%s) AND (c.ends<=%s) AND (status1=%s OR %s='') AND (status2=%s OR %s='') ''',
                            [country, country, start_date, end_date, status1, status1, status2, status2])
             ex = cursor.fetchall()
     result_dict = {'ex': ex}
