@@ -144,7 +144,7 @@ def adminPage(request):
                                request.POST['id']])
     with connection.cursor() as cursor:
         cursor.execute(
-            "SELECT userid,COUNT(userid) FROM users u, exchange e WHERE u.userid=e.userid1 OR u.userid=e.userid2 GROUP BY userid LIMIT 10 ")
+            "SELECT userid,COUNT(userid) FROM users u, exchange e WHERE u.userid=e.userid1 OR u.userid=e.userid2 GROUP BY userid ORDER BY COUNT(userid) DESC LIMIT 3 ")
         bestcust = cursor.fetchall()
         result_dict['bestcust'] = bestcust
 
@@ -155,13 +155,13 @@ def adminPage(request):
         result_dict['worstcust'] = worstcust
 
         cursor.execute(
-            "SELECT u.userid FROM users u WHERE u.userid NOT IN (SELECT c1.complain_of_userid FROM case_log c1) LIMIT 10"
+            "SELECT u.userid FROM users u WHERE u.userid NOT IN (SELECT c1.complain_of_userid FROM case_log c1) ORDER BY u.rating LIMIT 5"
         )
         nocomp = cursor.fetchall()
         result_dict['nocomp'] = nocomp
 
         cursor.execute(
-            'SELECT u.userid FROM users u WHERE NOT EXISTS(SELECT ex.userid1 FROM exchange ex WHERE ex.userid1=u.userid OR ex.userid2=u.userid) LIMIT 10'
+            'SELECT u.userid FROM users u WHERE NOT EXISTS(SELECT ex.userid1 FROM exchange ex WHERE ex.userid1=u.userid OR ex.userid2=u.userid) LIMIT 5'
         )
         noex = cursor.fetchall()
         result_dict['noex'] = noex
